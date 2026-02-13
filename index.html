@@ -637,15 +637,30 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
+let ytPlayer = null;
+let ytReady = false;
+
+// Load YouTube IFrame API
+const ytScript = document.createElement('script');
+ytScript.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(ytScript);
+
+window.onYouTubeIframeAPIReady = function() {
+  const div = document.createElement('div');
+  div.id = 'yt-player';
+  div.style.cssText = 'position:fixed;top:-200px;left:-200px;width:1px;height:1px;opacity:0;pointer-events:none;';
+  document.body.appendChild(div);
+  ytPlayer = new YT.Player('yt-player', {
+    width: 1, height: 1,
+    videoId: '2FhgKp_lfJQ',
+    playerVars: { autoplay: 0, start: 23, loop: 1, playlist: '2FhgKp_lfJQ', controls: 0, playsinline: 1 },
+    events: { onReady: function() { ytReady = true; } }
+  });
+};
+
 function startMusic() {
-  if (document.getElementById('bg-music')) return;
-  const iframe = document.createElement('iframe');
-  iframe.id = 'bg-music';
-  iframe.width = '0'; iframe.height = '0';
-  iframe.style.position = 'absolute'; iframe.style.opacity = '0'; iframe.style.pointerEvents = 'none';
-  iframe.allow = 'autoplay';
-  iframe.src = 'https://www.youtube.com/embed/2FhgKp_lfJQ?autoplay=1&start=25&loop=1&playlist=2FhgKp_lfJQ&controls=0';
-  document.body.appendChild(iframe);
+  if (!ytPlayer || !ytReady) return;
+  try { ytPlayer.seekTo(23, true); ytPlayer.playVideo(); } catch(e) {}
 }
 
 function openEnvelope() {
